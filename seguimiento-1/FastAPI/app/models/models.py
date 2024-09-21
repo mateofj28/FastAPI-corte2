@@ -8,11 +8,13 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 # pylint: disable=too-few-public-methods
 class Autor(Base):
     """
     Modelo para la tabla de autores. Cada autor puede tener varios libros.
     """
+
     __tablename__ = "autores"
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, index=True)
@@ -20,11 +22,13 @@ class Autor(Base):
 
     libros = relationship("Libro", back_populates="autor")
 
+
 # pylint: disable=too-few-public-methods
 class Libro(Base):
     """
     Modelo para la tabla de libros. Cada libro está asociado con un autor.
     """
+
     __tablename__ = "libros"
     id = Column(Integer, primary_key=True, index=True)
     titulo = Column(String, index=True)

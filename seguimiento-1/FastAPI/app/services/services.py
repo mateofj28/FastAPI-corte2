@@ -121,9 +121,7 @@ def create_libro(db: Session, titulo: str, autor_id: int, fecha_publicacion: str
         Libro: El libro creado en la base de datos.
     """
     nuevo_libro = Libro(
-        titulo=titulo,
-        autor_id=autor_id,
-        fecha_publicacion=fecha_publicacion
+        titulo=titulo, autor_id=autor_id, fecha_publicacion=fecha_publicacion
     )
     db.add(nuevo_libro)
     db.commit()
@@ -131,7 +129,9 @@ def create_libro(db: Session, titulo: str, autor_id: int, fecha_publicacion: str
     return nuevo_libro
 
 
-def update_libro(db: Session, libro_id: int, titulo: str, autor_id: int, fecha_publicacion: str):
+def update_libro(
+    db: Session, libro_id: int, titulo: str, autor_id: int, fecha_publicacion: str
+):
     """
     Actualiza un libro existente en la base de datos.
 
