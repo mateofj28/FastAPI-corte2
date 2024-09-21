@@ -1,12 +1,18 @@
 from fastapi import FastAPI
+from app.routes import routes
+from app.database import engine
+from app.models.models import Base
 
 app = FastAPI()
 
-@app.get("/")
-async def read_root():
-    return {"message": "Hello, World!"}
+# Crear las tablas en la base de datos
+Base.metadata.create_all(bind=engine)
 
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "query": q}
+# Incluir las rutas
+app.include_router(routes.router)
+
+# Ejecutar el servidor
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
