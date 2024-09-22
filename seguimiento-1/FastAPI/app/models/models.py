@@ -1,5 +1,5 @@
 """
-Este módulo contiene los modelos de base de datos para la aplicación.
+This module contains the database models for the application.
 """
 
 from sqlalchemy import Column, Integer, String, ForeignKey, Date
@@ -10,29 +10,29 @@ Base = declarative_base()
 
 
 # pylint: disable=too-few-public-methods
-class Autor(Base):
+class Author(Base):
     """
-    Modelo para la tabla de autores. Cada autor puede tener varios libros.
+    Model for the authors table. Each author can have multiple books.
     """
 
-    __tablename__ = "autores"
+    __tablename__ = "authors"
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String, index=True)
-    nacionalidad = Column(String)
+    name = Column(String, index=True)
+    nationality = Column(String)
 
-    libros = relationship("Libro", back_populates="autor")
+    books = relationship("Book", back_populates="author")
 
 
 # pylint: disable=too-few-public-methods
-class Libro(Base):
+class Book(Base):
     """
-    Modelo para la tabla de libros. Cada libro está asociado con un autor.
+    Model for the books table. Each book is associated with an author.
     """
 
-    __tablename__ = "libros"
+    __tablename__ = "books"
     id = Column(Integer, primary_key=True, index=True)
-    titulo = Column(String, index=True)
-    autor_id = Column(Integer, ForeignKey("autores.id"))
-    fecha_publicacion = Column(Date)
+    title = Column(String, index=True)
+    author_id = Column(Integer, ForeignKey("authors.id"))
+    publication_date = Column(Date)
 
-    autor = relationship("Autor", back_populates="libros")
+    author = relationship("Author", back_populates="books")
