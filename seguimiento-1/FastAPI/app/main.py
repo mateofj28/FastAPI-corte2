@@ -1,55 +1,59 @@
 """
-Main module for the FastAPI application.
+Main module for FastAPI application setup.
 
-This module initializes the FastAPI app and sets up the database connection
-management and route inclusion.
+This module sets up the FastAPI application, manages the database connection
+lifecycle, and includes routes.
 """
 
-from contextlib import asynccontextmanager  
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Depends
+from helpers.api_key_auth import get_api_key
 from starlette.responses import RedirectResponse
-
-# Base de datos
-from config.database import database as connection
-from routes.store_route import store_route
-from routes.invetory_route import inventory_route
-
+from database import database as connection
+from routes.author_route import author_router
+from routes.book_route import book_router
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def manage_lifespan(_app: FastAPI):
     """
-    Context manager to manage the lifespan of the FastAPI application.
+    Manage the lifespan of the FastAPI application.
 
-    Connects to the database when the application starts and closes the connection
-    when the application stops.
-
-    Args:
-        application (FastAPI): The FastAPI application instance.
+    Ensures the database connection is opened and closed properly.
     """
     if connection.is_closed():
         connection.connect()
     try:
-        yield  # Aquí es donde se ejecutará la aplicación
+        yield
     finally:
         if not connection.is_closed():
             connection.close()
 
-
-app = FastAPI(lifespan=lifespan)
-
+app = FastAPI(
+    title="Microservicio de libros",
+    version="2.0",
+    contact={
+        "name": "julian andres arango",
+        "url": "https://github.com/Julian-Aa",
+        "email": "julian.arango.re@gmail.com",
+    },
+    lifespan=manage_lifespan
+)
 
 @app.get("/")
-async def read_root() -> RedirectResponse:
+async def read_root():
     """
-    Redirects the root URL to the FastAPI documentation.
+    Redirect the root path to the API documentation.
 
-    Returns:
-        RedirectResponse: A redirect response to the FastAPI documentation page.
+    Returns a redirection response to the documentation page.
     """
     return RedirectResponse(url="/docs")
 
+app.include_router(author_router,
+                   prefix="/authors",
+                   tags=["Authors"],
+                   dependencies=[Depends(get_api_key)])
 
-# Include routers for store and inventory routes
-app.include_router(router, prefix="/api/biblioteca", tags=["biblioteca"])
-
-
+app.include_router(book_router,
+                   prefix="/books",
+                   tags=["Books"],
+                   dependencies=[Depends(get_api_key)])
